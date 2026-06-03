@@ -63,25 +63,63 @@ class Recipe:
         return output
 
 
-'''
-if __name__ == "__main__":
-    muka=Ingredient("Мука",500,"г")
-    eggs = Ingredient("Яйцо", 200, "г")
-    cheese = Ingredient("Сыр", 300, "г")
-    water = Ingredient("Вода", 100, "мл")
-    cheese2 = Ingredient("Сыр", 400, "г")
-    pizza_ingredients = [muka, eggs, cheese]
-    pizza=Recipe("Пицца", pizza_ingredients)
+class ShoppingList:
+    def __init__(self, _items: list[(Ingredient, str)] | None = None):
+        self._items = _items if _items is not None else []
+    
+    def add_recipe(self, recipe: Recipe, portions: float) -> None:
+        if portions <= 0:
+            raise ValueError("Количество порций должно быть положительным")
+        recipe = recipe.scale(portions)
+        new_ingredients=[]
+        for recipe_ingredient in recipe.ingredients:
+            found = False
+            for ingredient, title in self._items:
+                if ingredient == recipe_ingredient:
+                    ingredient.quantity += recipe_ingredient.quantity
+                    found = True
+                    break
+            if not found:
+                self._items.append((recipe_ingredient, recipe.title))
 
-    print(Recipe.is_valid_ratio(-10))
-    print(pizza)
-    pizza.add_ingredient(water)
-    print(pizza)
-    pizza.add_ingredient(cheese2)
-    print(pizza)
+    
+    def remove_recipe(self, title: str) -> None:
+        for item in self._items:
+            if item[1]==title:
+                self._item.remove(item)
 
-    print(pizza.scale(2))
-    print(len(pizza))
-'''   
+    def get_list(self)-> list[Ingredient]:
+        shopping_list_ingredients_dict = {}
+        for ingredient, title in self._items:
+            key = (ingredient.name, ingredient.unit)
+            if key in shopping_list_ingredients_dict:
+                shopping_list_ingredients_dict[key] += ingredient.quantity
+            else:
+               shopping_list_ingredients_dict[key] = ingredient.quantity
 
+        shopping_list_ingredients=[]
+        for item in shopping_list_ingredients_dict:
+            shopping_list_ingredients.append(Ingredient(item[0], shopping_list_ingredients_dict.get(item), item[1]))
+        shopping_list_ingredients.sort(key=lambda ingredient: ingredient.name)
+        return shopping_list_ingredients    
+
+    def __add__(self, other: ShoppingList) -> ShoppingList:
+        new_list = ShoppingList()
+
+        for ingredient, title in self._items:
+            copied_ingredient= Ingredient(ingredient.name, ingredient.quantity, ingredient.unit)
+            new_list._items.append((copied_ingredient, title))
+
+        for other_ingredient, other_title in other._items:
+            found = False
+            for ingredient, title in new_list._items:
+                if ingredient == other_ingredient:
+                    ingredient.quantity += other_ingredient.quantity
+                    found = True
+                    break
+            if not found:
+                copied_ingredient = Ingredient(other_ingredient.name, other_ingredient.quantity, other_ingredient.unit)
+                new_list._items.append((copied_ingredient, other_title))
+        return new_list
+    
 
