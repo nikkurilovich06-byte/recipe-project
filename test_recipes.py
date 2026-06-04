@@ -98,3 +98,167 @@ def test_len_returns_quantity_of_unique_ingredients():
     ingredient3 = Ingredient("Мука", 100, "г")
     recipe1.add_ingredient(ingredient3)
     assert len(recipe1) == 2
+
+
+
+
+
+def test_add_recipe_to_shopping_list():
+    ingredient1= Ingredient("Мука", 500, "г")
+    ingredient2= Ingredient("Сыр", 300, "г")
+    recipe1 = Recipe("Пицца", [ingredient1, ingredient2])
+    ingredient3= Ingredient("Вода", 500, "мл")
+    ingredient4= Ingredient("Мука", 300, "г")
+    recipe2 = Recipe("Хлебная кайфуля", [ingredient3, ingredient4])
+
+    shopping_list1 = ShoppingList([(ingredient1, recipe1.title), (ingredient2, recipe1.title)])
+    shopping_list1.add_recipe(recipe2, 3)
+    result = shopping_list1.get_list()
+
+    assert len(result)==3
+    ingredient1_from_list = next(ingredient for ingredient in result if ingredient.name == "Мука") #https://docs.python.org/3/library/functions.html#next
+    ingredient2_from_list = next(ingredient for ingredient in result if ingredient.name == "Сыр")
+    ingredient3_from_list = next(ingredient for ingredient in result if ingredient.name == "Вода")
+
+    assert ingredient1_from_list.quantity == 1400.0
+    assert ingredient1_from_list.unit == "г"
+
+    assert ingredient2_from_list.quantity == 300.0
+    assert ingredient2_from_list.unit == "г"
+
+    assert ingredient3_from_list.quantity == 1500.0
+    assert ingredient3_from_list.unit == "мл"
+
+
+def test_portion_lower_zero_raises_error():
+    recipe1 = Recipe("Пицца", [Ingredient("Мука", 500, "г")])
+    shopping_list1 = ShoppingList()
+
+    with pytest.raises(ValueError):
+        shopping_list1.add_recipe(recipe1, 0)
+    with pytest.raises(ValueError):
+        shopping_list1.add_recipe(recipe1, -1)
+
+
+def test_remove_existing_ingredients_by_removing_recipe():
+    ingredient1= Ingredient("Мука", 500, "г")
+    ingredient2= Ingredient("Сыр", 300, "г")
+    recipe1 = Recipe("Пицца", [ingredient1, ingredient2])
+    ingredient3= Ingredient("Вода", 500, "мл")
+    ingredient4= Ingredient("Мука", 300, "г")
+    recipe2 = Recipe("Хлебная кайфуля", [ingredient3, ingredient4])
+
+    shopping_list1 = ShoppingList()
+    shopping_list1.add_recipe(recipe1, 1)
+    shopping_list1.add_recipe(recipe2, 1)
+    shopping_list1.remove_recipe("Хлебная кайфуля")
+    flour = next(ingredient for ingredient in shopping_list1.get_list() if ingredient.name == "Мука")
+    assert flour.quantity == 800.0
+
+def test_remove_recipe_with_unknown_title_does_nothing():
+    ingredient1= Ingredient("Мука", 500, "г")
+    ingredient2= Ingredient("Сыр", 300, "г")
+    recipe1 = Recipe("Пицца", [ingredient1, ingredient2])
+
+    shopping_list1 = ShoppingList()
+    shopping_list1.add_recipe(recipe1, 1)
+    
+    shopping_list1.remove_recipe("Каша")
+    result=shopping_list1.get_list()
+    assert len(result)==2
+    assert ingredient1 in result
+    assert ingredient2 in result
+
+def test_get_list_same_ingredients_sums():
+    ingredient1= Ingredient("Мука", 500, "г")
+    ingredient2= Ingredient("Сыр", 300, "г")
+    recipe1 = Recipe("Пицца", [ingredient1, ingredient2])
+    ingredient3= Ingredient("Вода", 500, "мл")
+    ingredient4= Ingredient("Мука", 300, "г")
+    recipe2 = Recipe("Хлебная кайфуля", [ingredient3, ingredient4])
+
+    shopping_list1 = ShoppingList()
+    shopping_list1.add_recipe(recipe1, 1)
+    shopping_list1.add_recipe(recipe2, 1)
+    result = shopping_list1.get_list()
+
+    assert len(result)==3
+    flour = next(ingredient for ingredient in result if ingredient.name == "Мука")
+    assert flour.quantity == 800.0
+    assert flour.unit == "г"
+
+def test_get_list_sorted_by_name_of_ingredient():
+        pizza = Recipe("Пицца",[
+            Ingredient("Мука", 500, "г"),
+            Ingredient("Сыр", 300, "г"),
+            Ingredient("Вода", 100, "мл"),])
+        shopping_list = ShoppingList()
+        shopping_list.add_recipe(pizza, 1)
+        result = shopping_list.get_list()
+        assert result[0].name == "Вода"
+        assert result[1].name == "Мука"
+        assert result[2].name == "Сыр"
+
+def test_add_return_new_list():
+    ingredient1= Ingredient("Мука", 500, "г")
+    ingredient2= Ingredient("Сыр", 300, "г")
+    recipe1 = Recipe("Пицца", [ingredient1, ingredient2])
+    ingredient3= Ingredient("Вода", 500, "мл")
+    ingredient4= Ingredient("Мука", 300, "г")
+    recipe2 = Recipe("Хлебная кайфуля", [ingredient3, ingredient4])
+
+    shopping_list1 = ShoppingList()
+    shopping_list1.add_recipe(recipe1, 1)
+    shopping_list2 = ShoppingList()
+    shopping_list2.add_recipe(recipe2, 1)
+
+    new_shopping_list = shopping_list1 + shopping_list2
+
+    result = new_shopping_list.get_list()
+
+    assert isinstance(new_shopping_list, ShoppingList)
+    assert new_shopping_list is not shopping_list1
+    assert new_shopping_list is not shopping_list2
+    assert len(result) == 3
+
+    flour = next(ingredient for ingredient in result if ingredient.name == "Мука")
+    water = next(ingredient for ingredient in result if ingredient.name == "Вода")
+    cheese = next(ingredient for ingredient in result if ingredient.name == "Сыр")
+    assert flour.quantity == 800.0
+    assert water.quantity == 500.0
+    assert cheese.quantity == 300.0
+
+def test_add_does_not_change_original_shopping_lists():
+    ingredient1= Ingredient("Мука", 500, "г")
+    ingredient2= Ingredient("Сыр", 300, "г")
+    recipe1 = Recipe("Пицца", [ingredient1, ingredient2])
+    ingredient3= Ingredient("Вода", 500, "мл")
+    ingredient4= Ingredient("Мука", 300, "г")
+    recipe2 = Recipe("Хлебная кайфуля", [ingredient3, ingredient4])
+
+    shopping_list1 = ShoppingList()
+    shopping_list1.add_recipe(recipe1, 1)
+    shopping_list2 = ShoppingList()
+    shopping_list2.add_recipe(recipe2, 1)
+
+    new_shopping_list = shopping_list1 + shopping_list2
+
+    
+    result1 = shopping_list1.get_list()
+    result2 = shopping_list2.get_list()
+    result_new = new_shopping_list.get_list()
+
+    flour1 = next(ingredient for ingredient in result1 if ingredient.name == "Мука")
+    flour2 = next(ingredient for ingredient in result2 if ingredient.name == "Мука")
+    flour_new = next(ingredient for ingredient in result_new if ingredient.name == "Мука")
+
+    assert flour1.quantity == 500.0
+    assert flour2.quantity == 300.0
+    assert flour_new.quantity == 800.0  
+
+
+     
+
+
+
+    

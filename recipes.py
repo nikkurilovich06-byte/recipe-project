@@ -86,7 +86,7 @@ class ShoppingList:
     def remove_recipe(self, title: str) -> None:
         for item in self._items:
             if item[1]==title:
-                self._item.remove(item)
+                self._items.remove(item)
 
     def get_list(self)-> list[Ingredient]:
         shopping_list_ingredients_dict = {}
