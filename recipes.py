@@ -71,15 +71,7 @@ class ShoppingList:
         if portions <= 0:
             raise ValueError("Количество порций должно быть положительным")
         recipe = recipe.scale(portions)
-        new_ingredients=[]
         for recipe_ingredient in recipe.ingredients:
-            found = False
-            for ingredient, title in self._items:
-                if ingredient == recipe_ingredient:
-                    ingredient.quantity += recipe_ingredient.quantity
-                    found = True
-                    break
-            if not found:
                 self._items.append((recipe_ingredient, recipe.title))
 
     
