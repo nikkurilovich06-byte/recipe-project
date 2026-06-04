@@ -114,11 +114,12 @@ def test_add_recipe_to_shopping_list():
     shopping_list1 = ShoppingList([(ingredient1, recipe1.title), (ingredient2, recipe1.title)])
     shopping_list1.add_recipe(recipe2, 3)
     result = shopping_list1.get_list()
-
+    
+    assert len(shopping_list1._items)==4
     assert len(result)==3
-    ingredient1_from_list = next(ingredient for ingredient in result if ingredient.name == "Мука") #https://docs.python.org/3/library/functions.html#next
-    ingredient2_from_list = next(ingredient for ingredient in result if ingredient.name == "Сыр")
-    ingredient3_from_list = next(ingredient for ingredient in result if ingredient.name == "Вода")
+    ingredient1_from_list = next(ingredient for ingredient in result if ingredient.name == "Мука") #next - https://docs.python.org/3/library/functions.html#next
+    ingredient2_from_list = next(ingredient for ingredient in result if ingredient.name == "Сыр") #next - https://docs.python.org/3/library/functions.html#next
+    ingredient3_from_list = next(ingredient for ingredient in result if ingredient.name == "Вода") #next - https://docs.python.org/3/library/functions.html#next
 
     assert ingredient1_from_list.quantity == 1400.0
     assert ingredient1_from_list.unit == "г"
@@ -152,7 +153,7 @@ def test_remove_existing_ingredients_by_removing_recipe():
     shopping_list1.add_recipe(recipe1, 1)
     shopping_list1.add_recipe(recipe2, 1)
     shopping_list1.remove_recipe("Хлебная кайфуля")
-    flour = next(ingredient for ingredient in shopping_list1.get_list() if ingredient.name == "Мука")
+    flour = next(ingredient for ingredient in shopping_list1.get_list() if ingredient.name == "Мука") #next - https://docs.python.org/3/library/functions.html#next
     assert flour.quantity == 800.0
 
 def test_remove_recipe_with_unknown_title_does_nothing():
@@ -183,7 +184,7 @@ def test_get_list_same_ingredients_sums():
     result = shopping_list1.get_list()
 
     assert len(result)==3
-    flour = next(ingredient for ingredient in result if ingredient.name == "Мука")
+    flour = next(ingredient for ingredient in result if ingredient.name == "Мука") #next - https://docs.python.org/3/library/functions.html#next
     assert flour.quantity == 800.0
     assert flour.unit == "г"
 
@@ -221,9 +222,9 @@ def test_add_return_new_list():
     assert new_shopping_list is not shopping_list2
     assert len(result) == 3
 
-    flour = next(ingredient for ingredient in result if ingredient.name == "Мука")
-    water = next(ingredient for ingredient in result if ingredient.name == "Вода")
-    cheese = next(ingredient for ingredient in result if ingredient.name == "Сыр")
+    flour = next(ingredient for ingredient in result if ingredient.name == "Мука") #next - https://docs.python.org/3/library/functions.html#next
+    water = next(ingredient for ingredient in result if ingredient.name == "Вода")#next - https://docs.python.org/3/library/functions.html#next
+    cheese = next(ingredient for ingredient in result if ingredient.name == "Сыр")#next - https://docs.python.org/3/library/functions.html#next
     assert flour.quantity == 800.0
     assert water.quantity == 500.0
     assert cheese.quantity == 300.0
@@ -248,9 +249,9 @@ def test_add_does_not_change_original_shopping_lists():
     result2 = shopping_list2.get_list()
     result_new = new_shopping_list.get_list()
 
-    flour1 = next(ingredient for ingredient in result1 if ingredient.name == "Мука")
-    flour2 = next(ingredient for ingredient in result2 if ingredient.name == "Мука")
-    flour_new = next(ingredient for ingredient in result_new if ingredient.name == "Мука")
+    flour1 = next(ingredient for ingredient in result1 if ingredient.name == "Мука") #next - https://docs.python.org/3/library/functions.html#next
+    flour2 = next(ingredient for ingredient in result2 if ingredient.name == "Мука") #next - https://docs.python.org/3/library/functions.html#next
+    flour_new = next(ingredient for ingredient in result_new if ingredient.name == "Мука") #next - https://docs.python.org/3/library/functions.html#next
 
     assert flour1.quantity == 500.0
     assert flour2.quantity == 300.0
