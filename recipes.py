@@ -44,12 +44,21 @@ class Recipe:
     
     @staticmethod
     def is_valid_ratio(ratio) -> bool:
-        return ratio>0
+        return isinstance(ratio, (int, float)) and ratio > 0
     
     def scale(self, ratio: float) -> Recipe:
+        if not Recipe.is_valid_ratio(ratio):
+            raise ValueError("Коэффициент должен быть положительным")
+
         new_ingredients = []
+
         for ingredient in self.ingredients:
-            new_ingredients.append(Ingredient(ingredient.name, ingredient.quantity * ratio, ingredient.unit))
+            new_ingredients.append(
+                Ingredient(
+                    ingredient.name,
+                    ingredient.quantity * ratio,
+                    ingredient.unit))
+
         return Recipe(self.title, new_ingredients)
     
     def __len__(self) -> int:
@@ -76,9 +85,7 @@ class ShoppingList:
 
     
     def remove_recipe(self, title: str) -> None:
-        for item in self._items:
-            if item[1]==title:
-                self._items.remove(item) #remove - https://docs.python.org/3/library/array.html#array.array.remove
+        self._items = [item for item in self._items if item[1] != title] 
 
     def get_list(self)-> list[Ingredient]:
         shopping_list_ingredients_dict = {}
@@ -92,26 +99,28 @@ class ShoppingList:
         shopping_list_ingredients=[]
         for item in shopping_list_ingredients_dict:
             shopping_list_ingredients.append(Ingredient(item[0], shopping_list_ingredients_dict.get(item), item[1]))
-        shopping_list_ingredients.sort(key=lambda ingredient: ingredient.name)
+        shopping_list_ingredients.sort(key=lambda ingredient: ingredient.name) #key sorting - https://docs.python.org/3/howto/sorting.html
         return shopping_list_ingredients    
 
     def __add__(self, other: ShoppingList) -> ShoppingList:
         new_list = ShoppingList()
 
         for ingredient, title in self._items:
-            copied_ingredient= Ingredient(ingredient.name, ingredient.quantity, ingredient.unit)
+            copied_ingredient = Ingredient(
+                ingredient.name,
+                ingredient.quantity,
+                ingredient.unit
+            )
             new_list._items.append((copied_ingredient, title))
 
-        for other_ingredient, other_title in other._items:
-            found = False
-            for ingredient, title in new_list._items:
-                if ingredient == other_ingredient:
-                    ingredient.quantity += other_ingredient.quantity
-                    found = True
-                    break
-            if not found:
-                copied_ingredient = Ingredient(other_ingredient.name, other_ingredient.quantity, other_ingredient.unit)
-                new_list._items.append((copied_ingredient, other_title))
+        for ingredient, title in other._items:
+            copied_ingredient = Ingredient(
+                ingredient.name,
+                ingredient.quantity,
+                ingredient.unit
+            )
+            new_list._items.append((copied_ingredient, title))
+
         return new_list
     
 

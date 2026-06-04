@@ -152,9 +152,18 @@ def test_remove_existing_ingredients_by_removing_recipe():
     shopping_list1 = ShoppingList()
     shopping_list1.add_recipe(recipe1, 1)
     shopping_list1.add_recipe(recipe2, 1)
+
     shopping_list1.remove_recipe("Хлебная кайфуля")
-    flour = next(ingredient for ingredient in shopping_list1.get_list() if ingredient.name == "Мука") #next - https://docs.python.org/3/library/functions.html#next
-    assert flour.quantity == 800.0
+
+    result = shopping_list1.get_list()
+
+    assert len(result) == 2
+
+    flour = next(ingredient for ingredient in result if ingredient.name == "Мука")
+    cheese = next(ingredient for ingredient in result if ingredient.name == "Сыр")
+
+    assert flour.quantity == 500.0
+    assert cheese.quantity == 300.0
 
 def test_remove_recipe_with_unknown_title_does_nothing():
     ingredient1= Ingredient("Мука", 500, "г")
