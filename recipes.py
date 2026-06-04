@@ -118,7 +118,7 @@ class ShoppingList:
                 ingredient.name,
                 ingredient.quantity,
                 ingredient.unit
-            )
+                )
             new_list._items.append((copied_ingredient, title))
 
         return new_list
